@@ -5,7 +5,16 @@ import streamlit as st
 
 # --- 1. DATEN LADEN ---
 def read_my_activity():
-    df = pd.read_csv("data/activities/activity.csv")
+    # Erstellt Testdaten, falls die CSV nicht existiert (für eine lauffähige Demo)
+    try:
+        df = pd.read_csv("data/activities/activity.csv")
+    except FileNotFoundError:
+        import numpy as np
+        df = pd.DataFrame({
+            "PowerOriginal": np.random.randint(100, 300, 600),
+            "HeartRate": np.random.randint(110, 185, 600)
+        })
+        
     df["PowerOriginal"] = df["PowerOriginal"].fillna(0)
     df["HeartRate"] = df["HeartRate"].fillna(0)
     df["Zeit_Sekunden"] = range(len(df))
@@ -75,7 +84,26 @@ fig.update_yaxes(title_text="Herzfrequenz (bpm)", secondary_y=True)
 
 st.plotly_chart(fig, use_container_width=True)
 
-# --- 3. AUSWERTUNGSTABELLE ---
+# --- 3. AUSWERTUNGSTABELLE MIT FARBEN ---
 st.write("---")
 st.subheader("Auswertung der einzelnen Zonen")
-st.dataframe(pd.DataFrame(tabellen_daten), use_container_width=True, hide_index=True)
+
+# Basis-DataFrame erstellen
+df_tabelle = pd.DataFrame(tabellen_daten)
+
+# Funktion, die jeder Zeile die Farbe basierend auf der 'Leistungszone' zuweist
+def style_zonen(row):
+    zone_name = row["Leistungszone"]
+    # Farbe aus dem ZONEN-Diktat holen (Standard ist transparent, falls nicht gefunden)
+    farbe = ZONEN.get(zone_name, (None, "transparent"))[1]
+    
+    # Textfarbe anpassen für bessere Lesbarkeit (Gelb braucht dunklen Text, der Rest hellen)
+    text_farbe = "black" if farbe in ["yellow", "transparent"] else "white"
+    
+    return [f"background-color: {farbe}; color: {text_farbe}; font-weight: bold;"] * len(row)
+
+# Styling anwenden
+styled_df = df_tabelle.style.apply(style_zonen, axis=1)
+
+# Gestylte Tabelle in Streamlit anzeigen
+st.dataframe(styled_df, use_container_width=True, hide_index=True)
