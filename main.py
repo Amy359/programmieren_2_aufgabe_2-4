@@ -67,3 +67,24 @@ with col1:
 
 
 
+# main.py
+
+# Hier importierst du dein Modul mit dem exakten Dateinamen (ohne .py)
+import advanced_powercurve as apc
+
+if __name__ == "__main__":
+    # 1. Daten einlesen (Sicherstellen, dass der Pfad stimmt)
+    df = apc.read_data("data/activity.csv") 
+    
+    # 2. Zeitspalte hinzufügen
+    df = apc.add_time(df)
+    
+    # 3. Power-Curve berechnen
+    intervalle = [1, 5, 60, 300, 1200]
+    df_pc = apc.create_df_pc(df, intervalle)
+    
+    # 4. DAS HIER ERSETZT DEN FEHLERHAFTEN STREAMLIT-CODE:
+    # Anstatt st.image() rufen wir jetzt einfach unsere Plot-Funktion auf
+    apc.create_plot_pc(df_pc)
+    
+    print("Auswertung erfolgreich! Bild 'screenshot.png' wurde erstellt.")
