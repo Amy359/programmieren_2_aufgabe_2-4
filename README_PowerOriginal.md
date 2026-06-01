@@ -16,3 +16,4 @@ Das Projekt verwendet **PDM** zur Verwaltung der Abhängigkeiten (wie Pandas und
    pdm install
 
 pdm run python advanced_powercurve.py
+<img width="1712" height="1135" alt="Screenshot (239)" src="https://github.com/user-attachments/assets/cf34bee1-4a47-489b-b7ed-875d719ae13f" />
