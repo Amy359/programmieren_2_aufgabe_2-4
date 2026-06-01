@@ -38,8 +38,7 @@ def create_plot_pc(df_pc):
 if __name__ == "__main__":
     print("Starte die Auswertung in einer einzelnen Datei...")
     
-    # 1. HIER GGF. DEN UTEN DATEINAMEN REINSCHREIBEN (z. B. activity_1.csv)
-    # Ich habe den Pfad laut deinem Screenshot auf den Ordner "activities" angepasst!
+    # 1. Daten einlesen
     df = read_data("data/activities/activity.csv")
     
     # 2. Zeitspalte hinzufügen
@@ -51,6 +50,11 @@ if __name__ == "__main__":
     
     # 4. Plot anzeigen und screenshot.png generieren
     create_plot_pc(df_pc)
+    
+    # 5. DataFrame im Terminal anzeigen lassen
+    print("\n--- Berechnete Power-Curve Werte ---")
+    print(df_pc.to_string(index=False))
+    print("------------------------------------\n")
     
     print("Auswertung erfolgreich! Bild 'screenshot.png' wurde im Hauptordner erstellt.")
 
