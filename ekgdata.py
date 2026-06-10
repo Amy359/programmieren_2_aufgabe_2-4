@@ -149,7 +149,7 @@ if __name__ == "__main__":
         print(f"Fehler im Ablauf: {e}")
 
 
-print(">>> GELADENE DATEI:", __file__)
+
 
 
 
