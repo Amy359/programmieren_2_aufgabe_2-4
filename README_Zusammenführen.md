@@ -4,7 +4,7 @@ Diese Streamlit-App visualisiert medizinische Nutzerdaten und EKG-Signale basier
 
 ---
 
-## 🛠️ Setup & Start (PDM)
+## Setup & Start (PDM)
 
 Führe diese Befehle nacheinander im Terminal aus, um das Projekt einzurichten und zu starten:
 
@@ -21,6 +21,7 @@ pdm install
 # 4. Streamlit-App starten
 pdm run streamlit run main.py
 
-<img width="1700" height="1348" alt="image" src="https://github.com/user-attachments/assets/78e0cb5a-5339-402b-9b42-f0ddf1946759" />
-<img width="1664" height="1442" alt="image" src="https://github.com/user-attachments/assets/f41981a5-661b-407a-aeec-576c9e38dc2d" />
+<img width="1664" height="1442" alt="Screenshot 2026-06-10 202945" src="https://github.com/user-attachments/assets/1a933772-6d84-408f-a39d-974c0736dd89" />
+<img width="1700" height="1348" alt="Screenshot 2026-06-10 202856" src="https://github.com/user-attachments/assets/05f923b0-4bb3-4912-8fda-5fa100e8aaa4" />
+
 
