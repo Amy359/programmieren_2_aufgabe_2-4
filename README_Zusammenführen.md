@@ -20,3 +20,7 @@ pdm install
 
 # 4. Streamlit-App starten
 pdm run streamlit run main.py
+
+<img width="1700" height="1348" alt="image" src="https://github.com/user-attachments/assets/78e0cb5a-5339-402b-9b42-f0ddf1946759" />
+<img width="1664" height="1442" alt="image" src="https://github.com/user-attachments/assets/f41981a5-661b-407a-aeec-576c9e38dc2d" />
+
