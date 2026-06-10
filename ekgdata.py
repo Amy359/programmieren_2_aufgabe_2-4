@@ -11,9 +11,9 @@ class EKG_Test:
         # CSV laden
         self.df = pd.read_csv(
             self.result_link,
-            sep='\t',
+            sep="\t",
             header=None,
-            names=['Messwerte in mV', 'Zeit in ms']
+            names=["Messwerte in mV", "Zeit in ms"]
         )
 
         # Auf 5000 Werte begrenzen
@@ -36,12 +36,15 @@ class EKG_Test:
 
         raise ValueError(f"EKG-Test mit ID {test_id} wurde nicht gefunden.")
 
+    # ---------------------------------------------------------
+    # PEAK-ERKENNUNG
+    # ---------------------------------------------------------
     def find_peaks(self):
         df = self.df.copy()
 
-        window_ms = 300
-        refractory_ms = 250
-        amplitude_threshold = 360  # <<< nur Peaks über 360 mV
+        window_ms = 150          # kleinere Fenstergröße = bessere Peak-Position
+        refractory_ms = 250      # kein Peak schneller als 250 ms
+        amplitude_threshold = 350  # Option A: feste Schwelle
 
         df["is_peak"] = False
 
@@ -76,6 +79,9 @@ class EKG_Test:
 
         print(f"{len(self.peaks)} Peaks > {amplitude_threshold} mV gefunden.")
 
+    # ---------------------------------------------------------
+    # HERZFREQUENZ
+    # ---------------------------------------------------------
     def estimate_hr(self):
         if self.peaks is None or len(self.peaks) < 2:
             print("Zu wenige Peaks – bitte zuerst find_peaks() ausführen.")
@@ -94,6 +100,9 @@ class EKG_Test:
 
         return self.heart_rate
 
+    # ---------------------------------------------------------
+    # STREAMLIT-PLOT
+    # ---------------------------------------------------------
     def plot_time_series(self, n_points=2000):
         df_plot = self.df.iloc[:n_points]
 
@@ -116,12 +125,12 @@ class EKG_Test:
             fig.add_scatter(
                 x=visible_peaks["Zeit in ms"],
                 y=visible_peaks["Messwerte in mV"],
-                mode='markers',
-                name='Peaks',
-                marker=dict(color='red', size=12, symbol='x')
+                mode="markers",
+                name="Peaks",
+                marker=dict(color="red", size=12, symbol="x")
             )
 
-        # WICHTIG: Plot in Streamlit anzeigen, nicht in neuem Fenster
+        # WICHTIG: Streamlit statt fig.show()
         import streamlit as st
         st.plotly_chart(fig, use_container_width=True)
 
@@ -138,6 +147,11 @@ if __name__ == "__main__":
 
     except Exception as e:
         print(f"Fehler im Ablauf: {e}")
+
+
+print(">>> GELADENE DATEI:", __file__)
+
+
 
 
 
