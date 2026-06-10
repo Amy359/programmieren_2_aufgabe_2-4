@@ -24,7 +24,27 @@ def get_person_list(person_data):
 
     for eintrag in person_data:
         list_of_names.append(eintrag["lastname"] + ", " +  eintrag["firstname"])
-    return list_of_names
+    return list_of_names#
+
+
+def find_person_data_by_name(suchstring):
+    """ Eine Funktion, der Nachname, Vorname als ein String übergeben wird
+    und die die Person als Dictionary zurückgibt """
+    
+    person_data = load_person_data()
+    
+    if suchstring == "None" or not suchstring:
+        return {}
+
+    two_names = suchstring.split(", ")
+    nachname = two_names[0]
+    vorname = two_names[1]
+
+    for eintrag in person_data:
+        if (eintrag["lastname"] == nachname and eintrag["firstname"] == vorname):
+            return eintrag
+            
+    return {}
 
 if __name__ == "__main__":
     person_dict = load_person_data()

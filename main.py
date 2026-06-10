@@ -1,90 +1,74 @@
 import streamlit as st
-import read_data as read_data 
 from PIL import Image
 
-person_dict = read_data.load_person_data()
-person_names = read_data.get_person_list(person_dict)
+from person import Person
+from ekgdata import EKG_Test
 
-import streamlit as st
+# -------------------------
+# PERSONEN LADEN
+# -------------------------
+
+persons = Person.load_person_data()
+person_names = Person.get_person_list(persons)
 
 col1, col2 = st.columns(2)
 
-
-# --- 1. FUNKTIONEN DEFINIEREN (Ganz nach oben) ---
-
-def find_person_data_by_name(suchstring):
-    """ Eine Funktion, der Nachname, Vorname als ein String übergeben wird
-    und die die Person als Dictionary zurückgibt """
-    
-    person_data = person_dict
-    
-    if suchstring == "None" or not suchstring:
-        return {}
-
-    two_names = suchstring.split(", ")
-    nachname = two_names[0]
-    vorname = two_names[1]
-
-    for eintrag in person_data:
-        if (eintrag["lastname"] == nachname and eintrag["firstname"] == vorname):
-            return eintrag
-            
-    return {}
-
-
-# --- 2. UI UND LOGIK (Darunter) ---
 with col1:
     st.write("# EKG APP")
     st.write("## Versuchsperson auswählen")
 
-    current_user = st.selectbox('Versuchsperson', options=person_names, key="current_user")
-    st.write(f"Die Person heißt: {current_user}")
+    current_user_name = st.selectbox(
+        "Versuchsperson",
+        options=person_names,
+        key="current_user"
+    )
 
-   
+    current_user = Person.find_person_data_by_name(current_user_name)
 
+    st.write(f"Die Person heißt: {current_user.get_full_name()}")
+    st.write(f"Alter: {current_user.calc_age()} Jahre")
+    st.write(f"Max HF: {current_user.hr_max} BPM")
 
-# --- 3. BILD DYNAMISCH LADEN (Jetzt kennt Python die Funktion!) ---
 with col2:
     if current_user:
-        aktuelle_person_daten = find_person_data_by_name(current_user)
-        
-        if aktuelle_person_daten and "picture_path" in aktuelle_person_daten:
-            dateipfad = aktuelle_person_daten["picture_path"]
-            
-            try:
-                image = Image.open(dateipfad)
-                st.image(image, caption=st.session_state.current_user)
-            except FileNotFoundError:
-                st.warning(f"Datei '{dateipfad}' existiert nicht im Ordner.")
+        image = current_user.get_image()
+        if image:
+            st.image(image, caption=current_user.get_full_name())
         else:
-            st.warning(f"Kein Bildpfad in den Daten für {current_user} hinterlegt.")
+            st.warning("Kein Bild gefunden.")
 
-with col1: 
-    st.write(f"Der Pfad ist: {dateipfad}")
+# -------------------------
+# EKG TEST AUSWÄHLEN
+# -------------------------
 
+st.write("---")
+st.write("## EKG-Test auswählen")
 
+if len(current_user.ekg_tests) == 0:
+    st.warning("Diese Person hat keine EKG-Tests.")
+else:
+    # Liste der Test-IDs
+    test_ids = [test["id"] for test in current_user.ekg_tests]
 
+    selected_test_id = st.selectbox(
+        "EKG-Test auswählen",
+        options=test_ids,
+        key="ekg_test"
+    )
 
+    # EKG-Test laden
+    ekg = EKG_Test.load_by_id(selected_test_id)
 
+    st.write(f"### EKG-Test ID: {ekg.id}")
+    st.write(f"Datum: {ekg.date}")
 
-# main.py
+    # Peaks finden + HR berechnen
+    ekg.find_peaks()
+    hr = ekg.estimate_hr()
 
-# Hier importierst du dein Modul mit dem exakten Dateinamen (ohne .py)
-import advanced_powercurve as apc
+    st.write(f"**Herzfrequenz:** {hr:.2f} BPM")
 
-if __name__ == "__main__":
-    # 1. Daten einlesen (Sicherstellen, dass der Pfad stimmt)
-    df = apc.read_data("data/activity.csv") 
-    
-    # 2. Zeitspalte hinzufügen
-    df = apc.add_time(df)
-    
-    # 3. Power-Curve berechnen
-    intervalle = [1, 5, 60, 300, 1200]
-    df_pc = apc.create_df_pc(df, intervalle)
-    
-    # 4. DAS HIER ERSETZT DEN FEHLERHAFTEN STREAMLIT-CODE:
-    # Anstatt st.image() rufen wir jetzt einfach unsere Plot-Funktion auf
-    apc.create_plot_pc(df_pc)
-    
-    print("Auswertung erfolgreich! Bild 'screenshot.png' wurde erstellt.")
+    # Plot anzeigen
+    st.write("### EKG-Plot")
+    ekg.plot_time_series()
+
